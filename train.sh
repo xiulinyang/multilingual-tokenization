@@ -27,7 +27,7 @@ python train_autoreg.py \
     --evaluation_strategy epoch \
     --output_dir models/$MODEL_NAME \
     --overwrite_output_dir \
-    --learning_rate $LR \
+    --learning_rate 0.0006 \
     --save_strategy epoch\
     --load_best_model_at_end True \
     --block_size 512 \
@@ -37,6 +37,7 @@ python train_autoreg.py \
     --warmup_steps 1000 \
     --seed $SEED \
     --fp16 \
+    --weight_decay 0.1\
     --report_to wandb \
 #    --push_to_hub \
 #    --hub_model_id $MODEL_NAME
