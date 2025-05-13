@@ -1,12 +1,11 @@
 #!/bin/bash
 
 LANG=$1
-SUFFIX=$2 # -indef_removal
-LR=$3
-SEED=$4
-VOCAB_SIZE=$5
+VOCAB_SIZE=$2
+SEED=$3
 
-MODEL_NAME=smolm-autoreg-bpe-$SUFFIX-$LR
+
+MODEL_NAME=$LANG_$VOCAB_SIZE
 
 python tokenizer_and_config.py -m $MODEL_NAME \
     --bpe \
@@ -39,5 +38,5 @@ python train_autoreg.py \
     --seed $SEED \
     --fp16 \
     --report_to wandb \
-    --push_to_hub \
-    --hub_model_id $MODEL_NAME
+#    --push_to_hub \
+#    --hub_model_id $MODEL_NAME
