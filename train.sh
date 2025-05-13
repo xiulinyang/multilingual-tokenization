@@ -5,12 +5,12 @@ VOCAB_SIZE=$2
 SEED=$3
 
 
-MODEL_NAME=$LANG_$VOCAB_SIZE_$SEEd
+MODEL_NAME=MODEL_NAME=${LANG}_${VOCAB_SIZE}_${SEED}
 
-python tokenizer_and_config.py -m $MODEL_NAME \
+python tokenizer_and_config.py -m "$MODEL_NAME" \
     --bpe \
-    --vocab $VOCAB_SIZE \
-    --train_file /scratch/xiulyang/multilingual-LM/data/multilingual/$LANG/train/$LANG.train \
+    --vocab "$VOCAB_SIZE" \
+    --train_file "/scratch/xiulyang/multilingual-LM/data/multilingual/$LANG/train/$LANG.train" \
 
 # warning: this will upload to your huggingface account (as long as you have the token set up)
 # else, it will error out; just omit --push_to_hub if you do not want this.
