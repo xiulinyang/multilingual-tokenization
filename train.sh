@@ -5,7 +5,7 @@ VOCAB_SIZE=$2
 SEED=$3
 
 
-MODEL_NAME=$LANG_$VOCAB_SIZE
+MODEL_NAME=$LANG_$VOCAB_SIZE_$SEEd
 
 python tokenizer_and_config.py -m $MODEL_NAME \
     --bpe \
