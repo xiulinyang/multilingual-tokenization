@@ -94,7 +94,7 @@ if __name__ == "__main__":
     la = args.language
     # Get path to model
     model_path = f"models/{la}_{vs}_{random_seed}"
-    models = glob(f"models/{la}_{vs}_{random_seed}/checkpoints-*")
+    models = glob(f"models/{la}_{vs}_{random_seed}/checkpoint-*")
     checkpoints = sorted([int(x.split('-')[-1]) for x in models])
     print(checkpoints)
     tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=True)
