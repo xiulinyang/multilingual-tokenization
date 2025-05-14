@@ -30,16 +30,14 @@ class SentencePieceUnigramTokenizer(BaseTokenizer):
         mask: bool = False,
         replacement: str = "▁",
         add_prefix_space: bool = True,
-        unk_token: Union[str, AddedToken] = "<unk>",
-        bos_token: Union[str, AddedToken] = "<s>",
-        eos_token: Union[str, AddedToken] = "</s>",
+        bos_token: Union[str, AddedToken] = "<|endoftext|>",
+        eos_token: Union[str, AddedToken] = "<|endoftext|>",
         pad_token: Union[str, AddedToken] = "<pad>",
     ):
         self.special_tokens = {
             "pad": {"id": 0, "token": pad_token},
             "bos": {"id": 1, "token": bos_token},
             "eos": {"id": 2, "token": eos_token},
-            "unk": {"id": 3, "token": unk_token},
         }
 
         if mask:
@@ -158,8 +156,8 @@ class BPETokenizer(BaseTokenizer):
         mask: bool = False,
         add_prefix_space: bool = True,
         unk_token: Union[str, AddedToken] = "<unk>",
-        bos_token: Union[str, AddedToken] = "<s>",
-        eos_token: Union[str, AddedToken] = "</s>",
+        bos_token: Union[str, AddedToken] = "<|endoftext|>",
+        eos_token: Union[str, AddedToken] = "<|endoftext|>",
         pad_token: Union[str, AddedToken] = "<pad>",
     ):
         self.special_tokens = {

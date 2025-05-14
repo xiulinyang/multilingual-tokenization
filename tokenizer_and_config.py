@@ -48,7 +48,7 @@ def autoreg_config(
     # hidden_size=256,
     # attention=12,
     # layers=12,
-    # max_len=130,
+    max_len=512,
 ):
     return AutoConfig.from_pretrained(
         "gpt2",
@@ -57,7 +57,7 @@ def autoreg_config(
         # hidden_size=hidden_size,
         # num_attention_heads=attention,
         # num_hidden_layers=layers,
-        # max_position_embeddings=max_len,
+        max_position_embeddings=max_len,
         # word_embed_proj_dim=hidden_size,
         bos_token_id=tokenizer.special_tokens["bos"]["id"],
         eos_token_id=tokenizer.special_tokens["eos"]["id"],
