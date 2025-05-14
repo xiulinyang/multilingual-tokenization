@@ -98,7 +98,6 @@ if __name__ == "__main__":
     checkpoints = sorted([int(x.split('-')[-1]) for x in models])
     print(checkpoints)
     tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=True)
-    print(tokenizer)
     # Get perturbed test files
     test_files = [f"/scratch/xiulyang/multilingual-LM/data/multilingual/{la}/test/{la}.test"]
 
@@ -133,7 +132,8 @@ if __name__ == "__main__":
         # Load model
         model = GPT2LMHeadModel.from_pretrained(
         model_path + '/checkpoint-'+ str(ckpt)).to(device)
-
+        print("Tokenizer vocab size:", len(tokenizer))
+        print("Model vocab size:", model.config.vocab_size)
         # Get perplexities
         perplexities = []
         for i in tqdm(range(0, len(token_sequences), BATCH_SIZE)):
