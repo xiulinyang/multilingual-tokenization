@@ -98,6 +98,7 @@ if __name__ == "__main__":
     checkpoints = sorted([int(x.split('-')[-1]) for x in models])
     print(checkpoints)
     tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=True)
+    print(tokenizer)
     # Get perturbed test files
     test_files = [f"/scratch/xiulyang/multilingual-LM/data/multilingual/{la}/test/{la}.test"]
 
@@ -110,11 +111,12 @@ if __name__ == "__main__":
 
         # Get tokens from test file and subsample
         f = open(test_file, 'r')
-        file_text_sequences = [l for l in f.readlines()]
-        file_token_sequences = [tokenizer.encode(l) for l in f.readlines()]
+        file_text_sequences = [l.strip() for l in f.readlines()]
+        file_token_sequences = [tokenizer.encode(l.strip()) for l in f.readlines()]
         text_sequences.extend(file_text_sequences)
         token_sequences.extend(file_token_sequences)
         print(text_sequences[:10])
+        print(token_sequences[:10])
     # # For logging/debugging, include decoded sentence
     # test_sents = [gpt2_tokenizer.decode(
     #     toks) for toks in token_sequences]
