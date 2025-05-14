@@ -5,7 +5,7 @@
 import sys
 sys.path.append("..")
 
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
+from transformers import GPT2LMHeadModel, GPT2TokenizerFast
 from tqdm import tqdm
 from glob import glob
 import pandas as pd
@@ -97,7 +97,7 @@ if __name__ == "__main__":
     models = glob(f"models/{la}_{vs}_{random_seed}/checkpoint-*")
     checkpoints = sorted([int(x.split('-')[-1]) for x in models])
     print(checkpoints)
-    tokenizer = GPT2Tokenizer.from_pretrained(model_path, use_fast=True)
+    tokenizer = GPT2TokenizerFast.from_pretrained(model_path, use_fast=True)
     # Get perturbed test files
     test_files = [f"/scratch/xiulyang/multilingual-LM/data/multilingual/{la}/test/{la}.test"]
 
