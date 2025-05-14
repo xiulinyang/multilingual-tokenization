@@ -128,7 +128,8 @@ if __name__ == "__main__":
     BATCH_SIZE = 8
     device = "cuda"
     for i, ckpt in enumerate(checkpoints):
-        print(f"Epoch: {i} (ckpt: {ckpt})")
+        epoch_num = i+1
+        print(f"Epoch: {epoch_num} (ckpt: {ckpt})")
 
         # Load model
         model = GPT2LMHeadModel.from_pretrained(
