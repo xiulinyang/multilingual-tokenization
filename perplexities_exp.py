@@ -103,13 +103,16 @@ if __name__ == "__main__":
 
     # Iterate over data files to get perplexity data
     print("Sampling test data")
-    token_sequences = []
+    text_sequences = []
+    token_sequences =[]
     for test_file in test_files:
         print(test_file)
 
         # Get tokens from test file and subsample
         f = open(test_file, 'r')
-        file_token_sequences = [l for l in f.readlines()]
+        file_text_sequences = [l for l in f.readlines()]
+        file_token_sequences = [tokenizer.encode(l) for l in f.readlines()]
+        text_sequences.extend(file_text_sequences)
         token_sequences.extend(file_token_sequences)
 
     # # For logging/debugging, include decoded sentence
@@ -117,7 +120,7 @@ if __name__ == "__main__":
     #     toks) for toks in token_sequences]
 
     ppl_df = pd.DataFrame({
-        "Sentences": token_sequences,
+        "Sentences": text_sequences,
     })
 
     BATCH_SIZE = 8
