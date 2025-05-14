@@ -127,7 +127,7 @@ if __name__ == "__main__":
 
         # Load model
         model = GPT2LMHeadModel.from_pretrained(
-        model_path + 'checkpoint-'+ str(ckpt)).to(device)
+        model_path + '/checkpoint-'+ str(ckpt)).to(device)
 
         # Get perplexities
         perplexities = []
