@@ -133,6 +133,7 @@ if __name__ == "__main__":
         model = GPT2LMHeadModel.from_pretrained(
         model_path + '/checkpoint-'+ str(ckpt)).to(device)
         print("Tokenizer vocab size:", len(tokenizer))
+        print(tokenizer)
         print("Model vocab size:", model.config.vocab_size)
         # Get perplexities
         perplexities = []
