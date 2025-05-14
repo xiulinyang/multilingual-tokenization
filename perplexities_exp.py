@@ -6,11 +6,8 @@ import sys
 sys.path.append("..")
 
 from transformers import GPT2LMHeadModel, AutoTokenizer
-from utils import CHECKPOINT_READ_PATH, FUNCTION_MAP, MULTILINGUAL_DATA_PATH, \
-    PAREN_MODELS, TOKENIZER, EXP_LANGS
 from tqdm import tqdm
 from glob import glob
-from numpy.random import default_rng
 import pandas as pd
 import torch
 import itertools
