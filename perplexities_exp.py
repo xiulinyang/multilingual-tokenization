@@ -5,7 +5,7 @@
 import sys
 sys.path.append("..")
 
-from transformers import GPT2LMHeadModel
+from transformers import GPT2LMHeadModel, AutoTokenizer
 from utils import CHECKPOINT_READ_PATH, FUNCTION_MAP, MULTILINGUAL_DATA_PATH, \
     PAREN_MODELS, TOKENIZER, EXP_LANGS
 from tqdm import tqdm
@@ -81,105 +81,73 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog='Edge probing',
         description='Edge probing experiments')
-    parser.add_argument('perturbation_type',
+    parser.add_argument('language',
                         default='all',
                         const='all',
                         nargs='?',
-                        choices=FUNCTION_MAP.keys(),
-                        help='Perturbation function used to transform the multilingual dataset')
-    parser.add_argument('test_perturbation_type',
-                        default='all',
-                        const='all',
-                        nargs='?',
-                        choices=FUNCTION_MAP.keys(),
-                        help='Perturbation function used to transform test the multilingual dataset')
-    parser.add_argument('train_set',
-                        default='all',
-                        const='all',
-                        nargs='?',
-                        choices=EXP_LANGS,
-                        help='BabyLM train set')
+                        help='languages')
+    parser.add_argument('vocab_size', help='Vocabulary size')
     parser.add_argument('random_seed', type=int, help="Random seed")
-    parser.add_argument('paren_model',
-                        default='all',
-                        const='all',
-                        nargs='?',
-                        choices=list(PAREN_MODELS.keys()) + ["randinit"],
-                        help='Parenthesis model')
-    parser.add_argument('vs', help='Vocabulary size')
+
 
     # Get args
     args = parser.parse_args()
-    vs = args.vs
-    la = args.train_set
-    lang_lower_case = args.train_set.lower()
-    gpt2_tokenizer = TOKENIZER[la]['shuffle']
+    vs = args.vocab_size
+    random_seed = args.random_seed
+    la = args.language
     # Get path to model
-    model = f"{args.perturbation_type}_{lang_lower_case}_{args.train_set}_{args.paren_model}_seed{args.random_seed}"
-    model_path = f"{CHECKPOINT_READ_PATH}/{args.perturbation_type}_{lang_lower_case}_{args.train_set}_{args.paren_model}/babylm_{model}/runs/{model}/checkpoint-"
-
+    model_path = f"models/{la}_{vs}_{random_seed}"
+    models = glob(f"models/{la}_{vs}_{random_seed}/checkpoints-*")
+    checkpoints = sorted([int(x.split('-')[-1]) for x in models])
+    print(checkpoints)
+    tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=True)
     # Get perturbed test files
     test_files = sorted(glob(
-        f"{MULTILINGUAL_DATA_PATH}/multilingual_data_perturbed/{args.test_perturbation_type}_{lang_lower_case}/test_affected/*"))
-
-    #FILE_SAMPLE_SIZE = 1000
-    rng = default_rng(args.random_seed)
+        f"/scratch/xiulyang/multilingual-LM/data/multilingual/{la}/test/{la}.test"))
 
     # Iterate over data files to get perplexity data
-    print("Sampling BabyLM affected test files to extract surprisals...")
+    print("Sampling test data")
     token_sequences = []
     for test_file in test_files:
         print(test_file)
 
         # Get tokens from test file and subsample
         f = open(test_file, 'r')
-        file_token_sequences = [
-            [int(s) for s in l.split()] for l in f.readlines()]
-        sample_indices = list(range(len(file_token_sequences)))
-        #rng.choice(
-        #    list(range(len(file_token_sequences))), FILE_SAMPLE_SIZE, replace=False)
-        file_token_sequences = [file_token_sequences[i]
-                                for i in sample_indices]
+        file_token_sequences = [l for l in f.readlines()]
         token_sequences.extend(file_token_sequences)
 
-    # For logging/debugging, include decoded sentence
-    test_sents = [gpt2_tokenizer.decode(
-        toks) for toks in token_sequences]
+    # # For logging/debugging, include decoded sentence
+    # test_sents = [gpt2_tokenizer.decode(
+    #     toks) for toks in token_sequences]
 
     ppl_df = pd.DataFrame({
-        "Sentences": test_sents
+        "Sentences": token_sequences,
     })
 
     BATCH_SIZE = 8
     device = "cuda"
-    for ckpt in CHECKPOINTS:
-        print(f"Checkpoint: {ckpt}")
+    for i, ckpt in enumerate(checkpoints):
+        print(f"Epoch: {i} (ckpt: {ckpt})")
 
         # Load model
         model = GPT2LMHeadModel.from_pretrained(
-        model_path + str(ckpt)).to(device)
+        model_path + 'checkpoint-'+ str(ckpt)).to(device)
 
         # Get perplexities
         perplexities = []
         for i in tqdm(range(0, len(token_sequences), BATCH_SIZE)):
             batch = token_sequences[i:i+BATCH_SIZE]
             ppls = get_perplexities(
-                model, batch, gpt2_tokenizer.eos_token_id, la)
+                model, batch, tokenizer.eos_token_id, la)
             perplexities.extend(ppls)
 
         # Add ppls to df
         ppl_df[f'Perplexities (ckpt {ckpt})'] = perplexities
 
     # Write results to CSV
-    if args.perturbation_type!=args.test_perturbation_type:
-        directory = f"perplexity_results/{args.perturbation_type}_{args.train_set}_{args.test_perturbation_type}"
-        file = directory + \
-            f"/{args.paren_model}_seed{args.random_seed}_train_{args.perturbation_type}_test_{args.test_perturbation_type}_{lang_lower_case}_{vs}.csv"
-        print(f"Writing results to CSV: {file}")
-    else:
-        directory = f"perplexity_results/{args.perturbation_type}_{args.train_set}_{args.test_perturbation_type}"
-        file = directory + \
-               f"/{args.paren_model}_seed{args.random_seed}_train_{args.perturbation_type}_test_{args.test_perturbation_type}_{lang_lower_case}_{vs}.csv"
+    directory = f"perplexity_results/{la}_{vs}"
+    file = directory + \
+           f"/{la}_{vs}_seed{args.random_seed}.csv"
 
     if not os.path.exists(directory):
         os.makedirs(directory)
