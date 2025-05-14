@@ -114,7 +114,7 @@ if __name__ == "__main__":
         file_token_sequences = [tokenizer.encode(l) for l in f.readlines()]
         text_sequences.extend(file_text_sequences)
         token_sequences.extend(file_token_sequences)
-
+        print(token_sequences[:10])
     # # For logging/debugging, include decoded sentence
     # test_sents = [gpt2_tokenizer.decode(
     #     toks) for toks in token_sequences]
