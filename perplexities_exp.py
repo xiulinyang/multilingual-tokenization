@@ -99,8 +99,7 @@ if __name__ == "__main__":
     print(checkpoints)
     tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=True)
     # Get perturbed test files
-    test_files = sorted(glob(
-        f"/scratch/xiulyang/multilingual-LM/data/multilingual/{la}/test/{la}.test"))
+    test_files = f"/scratch/xiulyang/multilingual-LM/data/multilingual/{la}/test/{la}.test"
 
     # Iterate over data files to get perplexity data
     print("Sampling test data")
