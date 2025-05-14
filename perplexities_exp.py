@@ -112,7 +112,7 @@ if __name__ == "__main__":
         # Get tokens from test file and subsample
         f = open(test_file, 'r')
         file_text_sequences = [l.strip() for l in f.readlines()]
-        file_token_sequences = [tokenizer.encode(l.strip()) for l in f.readlines()]
+        file_token_sequences = [tokenizer.encode(l.strip()) for l in file_text_sequences]
         text_sequences.extend(file_text_sequences)
         token_sequences.extend(file_token_sequences)
         print(text_sequences[:10])
