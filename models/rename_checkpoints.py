@@ -1,9 +1,19 @@
 import os
 import re
 import shutil
+import argparse
+
 
 # Path to model folder
-model_dir = "AR_50000_41"
+
+parser = argparse.ArgumentParser(
+    prog='rename models',
+    description='rename the model checkpoints from steps to epochs')
+
+parser.add_argument('-p', '--path_name', help='the path of the model')
+args = parser.parse_args()
+
+model_dir = args.path_name
 
 # Get all checkpoint folders
 checkpoints = [d for d in os.listdir(model_dir) if d.startswith("checkpoint-")]
