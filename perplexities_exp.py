@@ -16,8 +16,6 @@ import os
 
 
 
-MAX_TRAINING_STEPS = 10000
-CHECKPOINTS = list(range(0, MAX_TRAINING_STEPS+1, 200))
 
 
 def create_attention_mask(token_lists):
@@ -94,11 +92,11 @@ if __name__ == "__main__":
     la = args.language
     # Get path to model
     model_path = f"models/{la}_{vs}_{random_seed}"
-    models = glob(f"models/{la}_{vs}_{random_seed}/checkpoint-*")
-    checkpoints = sorted([int(x.split('-')[-1]) for x in models])
+    models = glob(f"models/{la}_{vs}_{random_seed}/epoch*")
+    checkpoints = sorted([int(x.split('_')[-1]) for x in models])
     print(checkpoints)
     check = str(checkpoints[0])
-    tokenizer = AutoTokenizer.from_pretrained(f'{model_path}/checkpoint-{check}', use_fast=True)
+    tokenizer = AutoTokenizer.from_pretrained(f'{model_path}', use_fast=True)
     # Get perturbed test files
     test_files = [f"/scratch/xiulyang/multilingual-LM/data/multilingual/{la}/test/{la}.test"]
 
@@ -133,7 +131,7 @@ if __name__ == "__main__":
 
         # Load model
         model = GPT2LMHeadModel.from_pretrained(
-        model_path + '/checkpoint-'+ str(ckpt)).to(device)
+        model_path + '/epoch_'+ str(ckpt)).to(device)
         print("Tokenizer vocab size:", len(tokenizer))
         print(tokenizer)
         print("Model vocab size:", model.config.vocab_size)
@@ -146,7 +144,7 @@ if __name__ == "__main__":
             perplexities.extend(ppls)
 
         # Add ppls to df
-        ppl_df[f'Perplexities (ckpt {ckpt})'] = perplexities
+        ppl_df[f"Epoch: {epoch_num} (ckpt: {ckpt})"] = perplexities
 
     # Write results to CSV
     directory = f"perplexity_results/{la}_{vs}"
