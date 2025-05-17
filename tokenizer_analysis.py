@@ -33,6 +33,6 @@ tokenized_text =[]
 for sent in tqdm(sents):
     tokens = tokenizer.tokenize(sent)
     tokenized_text.extend(tokens)
-with open(f'freq_epoch/{lang}_{vocab_size}.json', 'w') as f:
+with open(f'freq_epoch/{lang}.json', 'w') as f:
     freq = Counter(tokenized_text)
     json.dump(freq, f,ensure_ascii = False, indent = 4)
