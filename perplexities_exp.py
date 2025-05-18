@@ -1,6 +1,6 @@
 # perplexities.py
 # Author: Julie Kallini
-
+import math
 # For importing utils
 import sys
 sys.path.append("..")
@@ -36,7 +36,7 @@ def create_input_ids(lang, token_lists, pad_token_id):
     return torch.tensor(list(padded))
 
 
-def get_perplexities(model, token_lists, sentence_texts, pad_token_id, lang, device="cuda"):
+def get_perplexities(model, token_lists, sentence_texts, pad_token_id, lang, ppl_type, device="cuda"):
 
     # Prepare data
     input_ids = create_input_ids(lang, token_lists, pad_token_id).to(device)
@@ -70,9 +70,25 @@ def get_perplexities(model, token_lists, sentence_texts, pad_token_id, lang, dev
         dtype=torch.float,
         device=device,
     )
-    # Sum the loss over the sequence length, get per-example perplexity
-    per_example_loss = loss.sum(dim=1) / char_counts
-    return torch.exp(per_example_loss).tolist()
+    if ppl_type == 'bpc':
+        per_example_loss = loss.sum(dim=1) / char_counts
+        per_example_loss = per_example_loss /math.log(2)
+        return per_example_loss.tolist()
+    elif ppl_type == 'ppl':
+        per_example_loss = loss.sum(dim=1) / shift_attention_mask.sum(dim=1)
+        return torch.exp(per_example_loss).tolist()
+    elif ppl_type == 'bpb':
+        # l_t = shift_attention_mask.sum(dim=1)
+        l_b =  torch.tensor(
+        [max(1, len(s.encode("utf-8"))) for s in sentence_texts],
+        dtype=torch.float,
+        device=device,
+    )
+        per_example_loss = loss.sum(dim=1)/(l_b*math.log(2))
+        return per_example_loss.tolist()
+    else:
+        raise ValueError('The perplexity type is not supported')
+
 
 
 if __name__ == "__main__":
@@ -87,13 +103,14 @@ if __name__ == "__main__":
                         help='languages')
     parser.add_argument('vocab_size', help='Vocabulary size')
     parser.add_argument('random_seed', type=int, help="Random seed")
-
+    parser.add_argument('ppl_type', help='Type of perplexity')
 
     # Get args
     args = parser.parse_args()
     vs = args.vocab_size
     random_seed = args.random_seed
     la = args.language
+    ppl_type = args.ppl_type
     # Get path to model
     model_path = f"models/{la}_{vs}_{random_seed}"
     models = glob(f"models/{la}_{vs}_{random_seed}/epoch*")
@@ -145,7 +162,7 @@ if __name__ == "__main__":
             batch = token_sequences[i:i+BATCH_SIZE]
             batch_text = text_sequences[i:i+BATCH_SIZE]
             ppls = get_perplexities(
-                model, batch, batch_text, tokenizer.eos_token_id, la)
+                model, batch, batch_text, tokenizer.eos_token_id, la,ppl_type)
             perplexities.extend(ppls)
 
         # Add ppls to df
