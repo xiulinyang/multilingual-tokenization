@@ -152,7 +152,7 @@ if __name__ == "__main__":
         ppl_df[f"Epoch: {epoch_num} (ckpt: {ckpt})"] = perplexities
 
     # Write results to CSV
-    directory = f"perplexity_results/{la}_{vs}"
+    directory = f"perplexity_results_norm/{la}_{vs}"
     file = directory + \
            f"/{la}_{vs}_seed{args.random_seed}.csv"
 
