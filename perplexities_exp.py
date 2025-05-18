@@ -36,7 +36,7 @@ def create_input_ids(lang, token_lists, pad_token_id):
     return torch.tensor(list(padded))
 
 
-def get_perplexities(model, token_lists, pad_token_id, lang, device="cuda"):
+def get_perplexities(model, token_lists, sentence_texts, pad_token_id, lang, device="cuda"):
 
     # Prepare data
     input_ids = create_input_ids(lang, token_lists, pad_token_id).to(device)
@@ -65,9 +65,13 @@ def get_perplexities(model, token_lists, pad_token_id, lang, device="cuda"):
 
     # Apply the attention mask - only calculate loss where mask is 1
     loss = loss * shift_attention_mask
-
+    char_counts = torch.tensor(
+        [max(1, len(s)) for s in sentence_texts],
+        dtype=torch.float,
+        device=device,
+    )
     # Sum the loss over the sequence length, get per-example perplexity
-    per_example_loss = loss.sum(dim=1) / shift_attention_mask.sum(dim=1)
+    per_example_loss = loss.sum(dim=1) / char_counts
     return torch.exp(per_example_loss).tolist()
 
 
@@ -139,8 +143,9 @@ if __name__ == "__main__":
         perplexities = []
         for i in tqdm(range(0, len(token_sequences), BATCH_SIZE)):
             batch = token_sequences[i:i+BATCH_SIZE]
+            batch_text = text_sequences[i:i+BATCH_SIZE]
             ppls = get_perplexities(
-                model, batch, tokenizer.eos_token_id, la)
+                model, batch, batch_text, tokenizer.eos_token_id, la)
             perplexities.extend(ppls)
 
         # Add ppls to df
