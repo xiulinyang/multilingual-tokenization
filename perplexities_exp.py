@@ -14,9 +14,6 @@ import argparse
 import os
 
 
-
-
-
 def create_attention_mask(token_lists):
     seq_length = max([len(i) for i in token_lists])
     batch_size = len(token_lists)
@@ -76,6 +73,9 @@ def get_perplexities(model, token_lists, sentence_texts, pad_token_id, lang, ppl
     elif ppl_type == 'ppl':
         per_example_loss = loss.sum(dim=1) / shift_attention_mask.sum(dim=1)
         return torch.exp(per_example_loss).tolist()
+    elif ppl_type == 'log-ppl':
+        per_example_loss = loss.sum(dim=1)
+        return per_example_loss.tolist()
     elif ppl_type == 'bpb':
         # l_t = shift_attention_mask.sum(dim=1)
         l_b =  torch.tensor(
