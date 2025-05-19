@@ -1,11 +1,10 @@
 # perplexities.py
-# Author: Julie Kallini
+# Author: Xiulin Yang (modifications based on Julie Kallini's code)
 import math
-# For importing utils
 import sys
 sys.path.append("..")
 
-from transformers import GPT2LMHeadModel, GPT2TokenizerFast, AutoTokenizer
+from transformers import GPT2LMHeadModel,AutoTokenizer
 from tqdm import tqdm
 from glob import glob
 import pandas as pd
