@@ -83,7 +83,8 @@ def get_perplexities(model, token_lists, sentence_texts, pad_token_id, lang, ppl
         dtype=torch.float,
         device=device,
     )
-        per_example_loss = loss.sum(dim=1)/(l_b*math.log(2))
+        per_example_loss = loss.sum(dim=1)/l_b
+        per_example_loss = per_example_loss/math.log(2)
         return per_example_loss.tolist()
     else:
         raise ValueError('The perplexity type is not supported')
