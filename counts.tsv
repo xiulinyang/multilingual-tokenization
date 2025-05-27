@@ -29,3 +29,11 @@ RU	10000	203870	1307827	734208
 RU	20000	186765	1307827	734208
 RU	30000	178772	1307827	734208
 RU	50000	170821	1307827	734208
+language	vocab_size	corpus_token_counts	bit_counts	character_counts
+AR	8680	186431	1066047	597954
+language	vocab_size	corpus_token_counts	bit_counts	character_counts
+TR	13222	184629	868203	785552
+language	vocab_size	corpus_token_counts	bit_counts	character_counts
+RU	21042	185619	1307827	734208
+language	vocab_size	corpus_token_counts	bit_counts	character_counts
+DE	42180	188651	886480	873744
