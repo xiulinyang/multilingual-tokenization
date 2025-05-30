@@ -169,8 +169,9 @@ if __name__ == "__main__":
             except:
                 failed_batch+=1
                 print(failed_batch)
-                print(batch)
-                continue
+                for idx, txt in zip(batch, batch_text):
+                    print(idx, txt)
+                
 
         # Add ppls to df
         ppl_df[f"Epoch: {epoch_num} (ckpt: {ckpt})"] = perplexities
