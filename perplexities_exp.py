@@ -158,6 +158,7 @@ if __name__ == "__main__":
         print("Model vocab size:", model.config.vocab_size)
         # Get perplexities
         perplexities = []
+        failed_batch=0
         for i in tqdm(range(0, len(token_sequences), BATCH_SIZE)):
             batch = token_sequences[i:i+BATCH_SIZE]
             batch_text = text_sequences[i:i+BATCH_SIZE]
@@ -166,7 +167,10 @@ if __name__ == "__main__":
                     model, batch, batch_text, tokenizer.eos_token_id, la,ppl_type)
                 perplexities.extend(ppls)
             except:
+                failed_batch+=1
+                print(failed_batch)
                 print(batch)
+                continue
 
         # Add ppls to df
         ppl_df[f"Epoch: {epoch_num} (ckpt: {ckpt})"] = perplexities
