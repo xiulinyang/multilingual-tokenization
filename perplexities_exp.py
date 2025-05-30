@@ -146,8 +146,8 @@ if __name__ == "__main__":
 
     BATCH_SIZE = 8
     device = "cuda"
-    for i, ckpt in enumerate(checkpoints):
-        epoch_num = i+1
+    for j, ckpt in enumerate(checkpoints):
+        epoch_num = j+1
         print(f"Epoch: {epoch_num} (ckpt: {ckpt})")
 
         # Load model
@@ -161,9 +161,12 @@ if __name__ == "__main__":
         for i in tqdm(range(0, len(token_sequences), BATCH_SIZE)):
             batch = token_sequences[i:i+BATCH_SIZE]
             batch_text = text_sequences[i:i+BATCH_SIZE]
-            ppls = get_perplexities(
-                model, batch, batch_text, tokenizer.eos_token_id, la,ppl_type)
-            perplexities.extend(ppls)
+            try:
+                ppls = get_perplexities(
+                    model, batch, batch_text, tokenizer.eos_token_id, la,ppl_type)
+                perplexities.extend(ppls)
+            except:
+                print(batch)
 
         # Add ppls to df
         ppl_df[f"Epoch: {epoch_num} (ckpt: {ckpt})"] = perplexities
